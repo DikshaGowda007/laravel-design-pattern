@@ -6,23 +6,11 @@ use App\Models\User;
 use App\Repositories\V1\UserRepositoryInterface;
 use App\services\Bo\User\Create\CreateUserBo;
 use App\Services\Bo\User\Get\GetUserBo;
+use App\Services\Bo\User\Update\UpdateUserBo;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
-
-use function PHPUnit\Framework\isEmpty;
 
 class UserRepository implements UserRepositoryInterface
 {
-    
-    public function getAllUsers()
-    {
-        return User::all();
-    }
-
-    public function getUserById($id)
-    {
-        return User::find($id);
-    }
 
     public function createUser(CreateUserBo $createUserBo)
     {
@@ -57,24 +45,14 @@ class UserRepository implements UserRepositoryInterface
         return $result->toArray();
     }
 
-    public function updateUser($id, array $data)
+    public function updateUser(UpdateUserBo $updateUserBo)
     {
-        $user = User::find($id);
-        if (!$user) {
-            return null;
-        }
-        if (isset($data['password'])) {
-            $data['password'] = bcrypt($data['password']);
-        }
-        $user->update($data);
-        return $user;
-    }
-
-    public function deleteUser($id)
-    {
-        $user = User::find($id);
-        // dd($user->toArray());
-        if(!$user) return false;
-        return $user->delete();
+        $user = User::find($updateUserBo->getId());
+        if(!$user){ return null; }
+        $user->update([
+            'name' => $updateUserBo->getName(),
+            'email' => $updateUserBo->getEmail()
+        ]);
+        return $user->toArray();
     }
 }
