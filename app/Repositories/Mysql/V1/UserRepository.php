@@ -5,6 +5,7 @@ namespace App\Repositories\Mysql\V1;
 use App\Models\User;
 use App\Repositories\V1\UserRepositoryInterface;
 use App\services\Bo\User\Create\CreateUserBo;
+use App\Services\Bo\User\Delete\DeleteUserBo;
 use App\Services\Bo\User\Get\GetUserBo;
 use App\Services\Bo\User\Update\UpdateUserBo;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -54,5 +55,12 @@ class UserRepository implements UserRepositoryInterface
             'email' => $updateUserBo->getEmail()
         ]);
         return $user->toArray();
+    }
+
+    public function deleteUser(DeleteUserBo $deleteUserBo){
+        $user = User::find($deleteUserBo->getId());
+        if(!$user){ return null; }
+        $user->delete();
+        return true;
     }
 }
